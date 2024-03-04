@@ -434,6 +434,45 @@ def subgame_heuristic(nuevo_juego, ficha):
 
   return result
 
+def macrogame_winning_lines(nuevo_juego, ficha):
+  
+  winning_lines_list = [[nuevo_juego.state[81], nuevo_juego.state[82], nuevo_juego.state[83]],
+                        [nuevo_juego.state[84], nuevo_juego.state[85], nuevo_juego.state[86]],
+                        [nuevo_juego.state[87], nuevo_juego.state[88], nuevo_juego.state[89]],
+                        [nuevo_juego.state[81], nuevo_juego.state[84], nuevo_juego.state[87]],
+                        [nuevo_juego.state[82], nuevo_juego.state[85], nuevo_juego.state[88]],
+                        [nuevo_juego.state[83], nuevo_juego.state[86], nuevo_juego.state[89]],
+                        [nuevo_juego.state[81], nuevo_juego.state[85], nuevo_juego.state[89]],
+                        [nuevo_juego.state[83], nuevo_juego.state[85], nuevo_juego.state[87]]]
+
+  winning_lines = 0
+  winning_lines_opponent = 0
+
+  if ficha == 'X':
+    for line in winning_lines_list:
+      sum = 0
+      for num in line:
+        sum += num
+      if (sum == 2) & (2 not in line):
+        winning_lines += 25
+      elif (sum == 4) & (1 not in line):
+        winning_lines_opponent -= 25
+
+  else:
+        for line in winning_lines_list:
+          sum = 0
+          for num in line:
+            sum += num
+          if (sum == 4) & (1 not in line):
+            winning_lines += 25
+          elif (sum == 2) & (2 not in line):
+            winning_lines_opponent -= 25
+
+  result = winning_lines + winning_lines_opponent
+
+  
+  return result
+
 
 def macrogame_heuristic(nuevo_juego, ficha):
 
@@ -485,7 +524,7 @@ def macrogame_heuristic(nuevo_juego, ficha):
   return score
 
 def game_heuristic(nuevo_juego,ficha):
-  return subgame_heuristic(nuevo_juego,ficha) + macrogame_heuristic(nuevo_juego,ficha)
+  return subgame_heuristic(nuevo_juego,ficha) + macrogame_heuristic(nuevo_juego,ficha)/2 + macrogame_winning_lines(nuevo_juego, ficha)
 
 
 def solucion_corregida(index):
@@ -582,7 +621,7 @@ class Ejecutable:
                 jugada_ia = solucion_corregida(minimax(juego, 5, True, ficha))
                 if jugada_ia is not None:
                     juego.play(jugada_ia)
-                    print("Movimiento de la IA:")
+                    print("Movimiento de la IA:", jugada_ia)
                     print(juego)
                     game_over = juego.is_game_over()
                 else:
